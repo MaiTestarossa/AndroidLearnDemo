@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     int month = c.get(Calendar.MONTH);
     int day = c.get(Calendar.DAY_OF_MONTH);
     private Spinner sp;
-    private String s[] = {"aaa", "aaaaa", "ccc"};
+    private String s[] = {"axxxaa", "aaaaa", "ccc"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
