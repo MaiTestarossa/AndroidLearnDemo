@@ -1,6 +1,7 @@
 package com.testarossa.uibasic;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 
 import java.util.Calendar;
 
@@ -22,7 +24,9 @@ public class MainActivity extends AppCompatActivity {
     int day = c.get(Calendar.DAY_OF_MONTH);
     private Spinner sp;
     private String s[] = {"axxxaa", "aaaaa", "ccc"};
-
+    private Button btnChooseTime;
+    int hour = c.get(Calendar.HOUR_OF_DAY);
+    int min = c.get(Calendar.MINUTE);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +56,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
+            }
+        });
+
+        btnChooseTime= (Button) findViewById(R.id.btnChooseTime);
+        btnChooseTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
+                        String s = String.format("%d:%d",i,i1);
+                        btnChooseTime.setText(s);
+                    }
+                },hour,min,true).show();
             }
         });
     }
