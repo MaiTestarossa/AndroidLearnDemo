@@ -6,8 +6,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
@@ -49,7 +51,10 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
     private Button btnNotifi;
     public static final int NOTIFICATION_ID = 1200;
-    private     int counter =0;
+    private int counter = 0;
+
+    private Button btnNormalDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,10 +106,10 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
             @Override
             public void onClick(View view) {
                 if (rb.isChecked()) {
-                    Toast t =Toast.makeText(MainActivity.this, "选择正确", Toast.LENGTH_SHORT);
-                    t.setGravity(Gravity.CENTER,0,0);
+                    Toast t = Toast.makeText(MainActivity.this, "选择正确", Toast.LENGTH_SHORT);
+                    t.setGravity(Gravity.CENTER, 0, 0);
                     t.show();
-                    Toast showImageToast =Toast.makeText(MainActivity.this,"这是一个带有图片的toast",Toast.LENGTH_LONG);
+                    Toast showImageToast = Toast.makeText(MainActivity.this, "这是一个带有图片的toast", Toast.LENGTH_LONG);
                     ImageView iv = new ImageView(MainActivity.this);
                     iv.setImageResource(R.mipmap.ic_launcher);
                     showImageToast.setView(iv);
@@ -136,17 +141,19 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
                 counter++;
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this);
                 builder.setSmallIcon(R.mipmap.ic_launcher);
-                builder.setContentTitle("有"+counter+"个新消息");
+                builder.setContentTitle("有" + counter + "个新消息");
                 builder.setContentText("你已经可以创建新的Notification了");
 
                 //创建可点击的Notification
-                Intent resultIntent = new Intent(MainActivity.this,MainActivity.class);
+                //官方示例使用stackBuilder 但是不知道如何用stackBuilder不创建新的Activity
+                //用intent.addFlags,PendingIntent.GetActivity 然后单例模式可以点击通知后不创建新的aty
+                Intent resultIntent = new Intent(MainActivity.this, MainActivity.class);
                 resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
-                stackBuilder.addParentStack(MainActivity.class);
-                stackBuilder.addNextIntent(resultIntent);
+//                stackBuilder.addParentStack(MainActivity.class);
+//                stackBuilder.addNextIntent(resultIntent);
                 PendingIntent resultPendingIntent =
-                        PendingIntent.getActivity(MainActivity.this,0,resultIntent,PendingIntent.FLAG_ONE_SHOT);
+                        PendingIntent.getActivity(MainActivity.this, 0, resultIntent, PendingIntent.FLAG_ONE_SHOT);
 //                        stackBuilder.getPendingIntent(
 //                                0,
 //                                PendingIntent.FLAG_ONE_SHOT
@@ -161,7 +168,16 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
 
                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-                manager.notify(NOTIFICATION_ID,notification);
+                manager.notify(NOTIFICATION_ID, notification);
+            }
+        });
+        btnNormalDialog = (Button) findViewById(R.id.btn_normaldialog);
+        btnNormalDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                showNormalDialog();
+//                showListDialog();
+                showSingleChooseDialog();
             }
         });
     }
@@ -182,6 +198,58 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
             s += cb4.getText() + " ";
         }
         tvMutiChooseResult.setText(s);
+    }
+
+    public void showNormalDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(R.mipmap.ic_launcher);
+        builder.setTitle("对话框标题");
+        builder.setMessage("请点击确定");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(MainActivity.this, "点击了确定按钮", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("关闭", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(MainActivity.this, "点击了关闭按钮", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        builder.show();
+    }
+
+    public void showListDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final String[] colors = {"黑色", "白色", "红色"};
+        builder.setTitle("这是一个列表对话框");
+        builder.setItems(colors, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(MainActivity.this, colors[i], Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.show();
+    }
+
+    public void showSingleChooseDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final String[] sex = {"男", "女"};
+
+        builder.setTitle("请选择您的性别");
+
+        builder.setSingleChoiceItems(sex, 0, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Toast.makeText(MainActivity.this, sex[i], Toast.LENGTH_SHORT).show();
+                //用于关闭dialog  http://stackoverflow.com/questions/14853325/how-to-dismiss-alertdialog-in-android
+                dialogInterface.cancel();
+            }
+        });
+        builder.show();
+
     }
 
 }
