@@ -1,1 +1,1 @@
-include ':app', ':uibasic'
+include ':app', ':uibasic', ':butterknifedemo'
